@@ -1,506 +1,173 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Prince of Eepytown</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%237c6fff'/></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#0b0c14;--bg2:#0f1020;--bg3:#13152a;
-  --surface:#181a30;--surface2:#1e2040;
-  --border:rgba(140,120,255,0.12);--border2:rgba(140,120,255,0.28);
-  --accent:#7c6fff;--accent2:#a99fff;--accent3:#c4baff;
-  --text:#e8e4ff;--text2:rgba(232,228,255,0.55);--text3:rgba(232,228,255,0.28);
-  --star:rgba(196,186,255,0.55);
-}
-html{scroll-behavior:smooth;}
-body{
-  background:var(--bg);color:var(--text);
-  font-family:'DM Mono',monospace;font-weight:300;
-  min-height:100vh;display:flex;overflow-x:hidden;
-}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    radial-gradient(1px 1px at 14% 20%,var(--star) 0%,transparent 100%),
-    radial-gradient(1px 1px at 73% 9%,var(--star) 0%,transparent 100%),
-    radial-gradient(1px 1px at 45% 54%,rgba(196,186,255,.3) 0%,transparent 100%),
-    radial-gradient(1px 1px at 87% 35%,var(--star) 0%,transparent 100%),
-    radial-gradient(1px 1px at 7% 79%,rgba(196,186,255,.25) 0%,transparent 100%),
-    radial-gradient(1px 1px at 60% 91%,var(--star) 0%,transparent 100%),
-    radial-gradient(1px 1px at 32% 6%,rgba(196,186,255,.4) 0%,transparent 100%),
-    radial-gradient(1px 1px at 94% 67%,var(--star) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 54% 16%,rgba(196,186,255,.5) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 29% 84%,rgba(196,186,255,.4) 0%,transparent 100%),
-    radial-gradient(1.5px 1.5px at 81% 51%,rgba(196,186,255,.5) 0%,transparent 100%);
-}
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+    <title></title>
+  </head>
 
-/* NAV */
-nav{
-  width:20%;min-width:170px;max-width:240px;
-  background:var(--bg2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  padding:2.5rem 0 2rem;
-  position:sticky;top:0;height:100vh;z-index:10;
-}
-.nav-logo{
-  padding:0 1.75rem 2.5rem;
-  font-family:'Cormorant Garamond',serif;font-size:1rem;
-  font-weight:300;font-style:italic;color:var(--accent3);letter-spacing:.02em;line-height:1.4;
-}
-.nav-logo span{
-  display:block;font-family:'DM Mono',monospace;font-size:.58rem;
-  font-style:normal;color:var(--text3);letter-spacing:.15em;
-  text-transform:uppercase;margin-top:.3rem;
-}
-.nav-links{flex:1;display:flex;flex-direction:column;}
-.nav-link{
-  display:flex;align-items:center;gap:.85rem;
-  padding:.8rem 1.75rem;text-decoration:none;
-  color:var(--text2);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
-  border-left:2px solid transparent;transition:color .2s,background .2s;
-}
-.nav-link:hover{color:var(--text);background:rgba(124,111,255,.06);}
-.nav-link.active{color:var(--accent3);border-left-color:var(--accent);background:rgba(124,111,255,.08);}
-.num{font-size:.55rem;color:var(--text3);min-width:1.1rem;}
-.nav-link.active .num{color:var(--accent);}
-.nav-foot{
-  padding:1.5rem 1.75rem;border-top:1px solid var(--border);
-  font-size:.57rem;letter-spacing:.1em;color:var(--text3);
-  text-transform:uppercase;line-height:1.9;
-}
+  <body>
+    <div class="main_container">
+        <div class="pixel_container">
+            <canvas id="gameCanvas" class="game-canvas"></canvas>
+        </div>
 
-/* MAIN */
-main{flex:1;position:relative;z-index:1;}
-
-section{
-  min-height:100vh;padding:6rem 5rem;
-  display:flex;flex-direction:column;justify-content:center;
-  border-bottom:1px solid var(--border);
-  opacity:0;transform:translateY(20px);
-  transition:opacity .65s ease,transform .65s ease;
-}
-section.visible{opacity:1;transform:translateY(0);}
-
-.tag{
-  font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:1.75rem;
-  display:flex;align-items:center;gap:.7rem;
-}
-.tag::before{content:'';display:block;width:20px;height:1px;background:var(--accent);}
-
-/* ── SECTION 1 ── */
-#hallo{background:var(--bg);overflow:hidden;}
-
-.hallo-title{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(3rem,6.5vw,5.8rem);
-  font-weight:300;line-height:1.05;
-  color:var(--text);letter-spacing:-.01em;
-  margin-bottom:2.25rem;max-width:18ch;
-}
-.hallo-title em{font-style:italic;color:var(--accent3);}
-
-.hallo-body{
-  font-size:.8rem;line-height:2.1;color:var(--text2);
-  max-width:44ch;margin-bottom:3rem;letter-spacing:.02em;
-}
-.hallo-body strong{color:var(--text);font-weight:400;}
-
-.cta-btn{
-  display:inline-flex;align-items:center;gap:.9rem;
-  padding:.9rem 1.9rem;
-  border:1px solid var(--border2);
-  color:var(--accent3);font-family:'DM Mono',monospace;
-  font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;
-  text-decoration:none;background:rgba(124,111,255,.05);
-  transition:all .22s;cursor:pointer;
-  position:relative;z-index:2;
-  align-self:flex-start;
-}
-.cta-btn:hover{background:rgba(124,111,255,.13);border-color:var(--accent);color:var(--text);}
-.cta-btn .arr{transition:transform .2s;}
-.cta-btn:hover .arr{transform:translateX(4px);}
-
-.hallo-img-wrap{
-  position:absolute;right:0%;top:50%;transform:translateY(-50%);
-  width:52%;aspect-ratio:3/4;overflow:hidden;
-  border:1px solid var(--border2);
-}
-.hallo-img-mobile{display:none;}
-.hallo-img-inner{
-  width:100%;height:100%;
-  background:var(--surface2);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:.75rem;
-}
-.hallo-img-inner svg{width:36px;height:36px;stroke:var(--text3);fill:none;stroke-width:1;}
-.hallo-img-inner span{
-  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--text3);
-}
-.hallo-img-inner::before{
-  content:'';position:absolute;inset:0;
-  background:
-    linear-gradient(135deg,rgba(124,111,255,.06) 0%,transparent 60%),
-    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(140,120,255,.04) 40px),
-    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(140,120,255,.04) 40px);
-}
-
-/* ── SECTION 2 ── */
-#frage{background:var(--bg2);}
-
-.frage-title{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(2.2rem,4.5vw,3.8rem);
-  font-weight:300;line-height:1.1;color:var(--text);
-  margin-bottom:1.25rem;
-}
-.frage-title em{font-style:italic;color:var(--accent3);}
-
-.frage-sub{
-  font-size:.78rem;color:var(--text2);letter-spacing:.04em;
-  max-width:50ch;line-height:2;margin-bottom:3.5rem;
-}
-
-.promises{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:1px;background:var(--border);margin-bottom:3.5rem;
-}
-.promise{
-  background:var(--bg2);padding:2rem 1.75rem;transition:background .2s;
-}
-.promise:hover{background:var(--surface);}
-.promise-icon{
-  width:32px;height:32px;border:1px solid var(--border2);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:1rem;
-}
-.promise-icon svg{width:14px;height:14px;stroke:var(--accent2);fill:none;stroke-width:1.5;}
-.promise-label{
-  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--accent2);margin-bottom:.5rem;
-}
-.promise-text{font-size:.72rem;color:var(--text2);line-height:1.9;letter-spacing:.02em;}
-.promise-text strong{color:var(--text);font-weight:400;}
-
-.quote-block{
-  border-left:2px solid var(--accent);
-  padding:1.25rem 2.25rem;
-  background:rgba(124,111,255,.04);
-  max-width:560px;
-}
-.quote-block p{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(1.2rem,2.2vw,1.6rem);
-  font-style:italic;font-weight:300;
-  color:var(--accent3);line-height:1.5;
-}
-.quote-block cite{
-  display:block;margin-top:.75rem;
-  font-family:'DM Mono',monospace;font-size:.58rem;
-  font-style:normal;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;
-}
-
-/* ── SECTION 3 ── */
-#danke{background:var(--bg3);}
-
-.danke-title{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(2.2rem,4.5vw,3.8rem);
-  font-weight:300;line-height:1.1;color:var(--text);
-  margin-bottom:1.25rem;
-}
-.danke-title em{font-style:italic;color:var(--accent3);}
-
-.danke-sub{
-  font-size:.78rem;color:var(--text2);letter-spacing:.04em;
-  max-width:48ch;line-height:2;margin-bottom:3.5rem;
-}
-
-.danke-box{
-  border:1px solid var(--border2);padding:2.75rem;
-  background:rgba(124,111,255,.04);max-width:580px;
-  margin-bottom:2.5rem;
-}
-.danke-box-title{
-  font-family:'Syne',sans-serif;font-size:.65rem;font-weight:500;
-  letter-spacing:.2em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:1.5rem;
-}
-.danke-steps{display:flex;flex-direction:column;gap:1.25rem;}
-.danke-step{display:flex;gap:1.25rem;align-items:flex-start;}
-.danke-step-num{
-  font-size:.58rem;color:var(--accent);letter-spacing:.1em;
-  min-width:1.5rem;padding-top:.15rem;
-}
-.danke-step-text{font-size:.75rem;color:var(--text2);line-height:1.9;letter-spacing:.02em;}
-.danke-step-text strong{color:var(--text);font-weight:400;}
-
-/* ── DIVIDER ── */
-.section-divider{
-  width:100%;max-width:580px;
-  height:1px;margin:3rem 0;
-  background:linear-gradient(90deg,transparent,var(--border2),transparent);
-}
-
-/* ── CTA AREA ── */
-.cta-area{
-  max-width:580px;
-}
-
-.cta-final{
-  display:inline-flex;align-items:center;gap:.9rem;
-  padding:1.4rem 2.8rem;
-  border:1px solid var(--accent);
-  color:var(--text);
-  font-family:'DM Mono',monospace;
-  font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;
-  text-decoration:none;
-  background:rgba(124,111,255,.12);
-  transition:all .22s;
-  margin-bottom:1.25rem;
-}
-.cta-final:hover{background:rgba(124,111,255,.25);border-color:var(--accent3);color:var(--accent3);}
-
-.cta-meta{
-  font-size:.88rem;color:var(--text2);letter-spacing:.03em;
-  line-height:2;margin-top:.5rem;
-}
-.cta-meta strong{color:var(--accent3);font-weight:400;}
-
-.mail-note{
-  margin-top:1.25rem;
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.25rem;font-weight:300;font-style:italic;
-  color:var(--accent3);letter-spacing:.02em;
-}
-
-/* anims */
-section.visible .tag      {animation:fup .5s ease .08s both;}
-section.visible .hallo-title{animation:fup .6s ease .18s both;}
-section.visible .hallo-body {animation:fup .6s ease .3s both;}
-section.visible .cta-btn  {animation:fup .6s ease .44s both;}
-section.visible .hallo-img-wrap{animation:fin 1s ease .35s both;}
-section.visible .frage-title{animation:fup .6s ease .1s both;}
-section.visible .frage-sub  {animation:fup .6s ease .22s both;}
-section.visible .promises  {animation:fup .6s ease .3s both;}
-section.visible .quote-block{animation:fup .6s ease .48s both;}
-section.visible .danke-title  {animation:fup .6s ease .1s both;}
-section.visible .danke-sub    {animation:fup .6s ease .22s both;}
-section.visible .danke-box    {animation:fup .6s ease .35s both;}
-section.visible .section-divider{animation:fup .6s ease .44s both;}
-section.visible .cta-area  {animation:fup .6s ease .5s both;}
-
-@keyframes fup{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-@keyframes fin{from{opacity:0;}to{opacity:.45;}}
-
-::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-track{background:var(--bg);}
-::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:2px;}
-
-@media(max-width:860px){
-  nav{display:none;}
-  section{padding:4rem 2rem;}
-  .hallo-deco{display:none;}
-  .promises{grid-template-columns:1fr;}
-  /* desktop image hidden, mobile image shown */
-  .hallo-img-wrap{display:none;}
-  .hallo-img-mobile{
-    display:block;
-    width:calc(100% + 4rem);
-    margin-left:-2rem;
-    margin-right:-2rem;
-    aspect-ratio:4/3;
-    overflow:hidden;
-    border-bottom:1px solid var(--border2);
-    margin-bottom:2.5rem;
-  }
-  .hallo-img-mobile img{width:100%;height:100%;object-fit:cover;display:block;}
-  #hallo{padding-top:0;justify-content:flex-start;}
-}
-</style>
-</head>
-<body>
-
-<nav>
-  <div class="nav-logo">
-    The Prince of Eepytown<br>
-    <span>>> loading . . .</span>
-  </div>
-  <div class="nav-links">
-    <a href="#hallo" class="nav-link active"><span class="num">01</span>hallo</a>
-    <a href="#frage" class="nav-link"><span class="num">02</span>kurze frage</a>
-    <a href="#danke"   class="nav-link"><span class="num">03</span>danke</a>
-  </div>
-  <div class="nav-foot">danke, dass du<br>hier bist :}</div>
-</nav>
-
-<main>
-
-<section id="hallo">
-  <!-- Mobile-only image, shown above text -->
-  <div class="hallo-img-mobile">
-    <img src="eepy.png" alt="">
-  </div>
-  <div class="tag">grüß gottle</div>
-  <h1 class="hallo-title">
-    Ich baue<br>ein Spiel.<br>
-    <em>Mach mit.</em>
-  </h1>
-  <p class="hallo-body">
-    Ein Videospiel ist ist nicht nur Code.
-    <br>Es ist Kunst, Gemeinschaft und eine Zukunft,
-    die wir zusammen erschaffen könnten.
-    <br><br>Und ich glaube, du gehörst da mit dazu.
-  </p>
-  <a href="#frage" class="cta-btn">Was laberst du?</a>
-  <div class="hallo-img-wrap">
-      <img src="eepy.png" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-  </div>
-</section>
-
-<section id="frage">
-  <div class="tag">Ein paar Dinge</div>
-  <h2 class="frage-title">Keine Bewerbung.<br><em>Nur eine Frage an dich.</em></h2>
-  <p class="frage-sub">
-    Wenn du bis hier noch dabei bist, nehme ich an, dass du Interesse hast.
-    <br><br>
-    Meine Frage an dich: <em>Kann ich mit dir rechnen?</em> Ich werde dich nur dieses eine Mal fragen.
-    Wenn das alles nichts für dich ist, ist das vollkommen okay. Ich hoffe du bist ehrlich und nicht höflich (ew) in deiner Antwort an mich.
-    <br><br>
-    Ich glaube, dass wir zusammen was machen können, das wirklich besonders ist und viele Menschen glücklich machen wird.
-  </p>
-
-  <div class="promises">
-    <div class="promise">
-      <div class="promise-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <div class="promise-label">YOU DO YOU</div>
-      <p class="promise-text">
-        Du bestimmst selbst, <strong>wie viel und was</strong> du beiträgst.
-        Ich sammle kleine Aufgaben. Du suchst dir aus, was dich anspricht.
-        Nichts passt? Easy. Wenn du wirklich mitmachen willst,
-        finden wir was für dich.
-      </p>
+        <div class="overlay">
+            <div class="overlay_content">
+                <h1 class="overlay_header_text">
+                    STEAR CLEAR<br>OF THE SUN<br>
+                </h1>
+                <p class="overlay_text">
+                    Sleep during the day<br>
+                    and a good nights work<br>
+                    are the key to victory!<br>
+                </p>
+            </div>
     </div>
-
-    <div class="promise">
-      <div class="promise-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      </div>
-      <div class="promise-label">YOU GET REWARDED</div>
-      <p class="promise-text">
-        Sobald das Spiel Geld macht, <strong>machst du Geld</strong>.
-        Bis dahin bezahle ich alles aus eigener Tasche (Oder aus Japan Souvenirs). 
-        Keine unbezahlte Arbeit, kein "für die Exposure". Deine Skills sind wertvoll und werden auch so behandelt.
-      </p>
-    </div>
-
-    <div class="promise">
-      <div class="promise-icon">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
-      </div>
-      <div class="promise-label">NO CRUNCH</div>
-      <p class="promise-text">
-        Wir machen das in einem <strong>menschlichem Tempo</strong>.
-        Ja es wird Deadlines geben, aber die werden entspannt angelegt.
-        Das hier ist kein Vollzeitjob (für dich). Es sind ein paar Stunden im Monat mit einem Freund.
-      </p>
-    </div>
-
-    <div class="promise">
-      <div class="promise-icon">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      </div>
-      <div class="promise-label">YOU ARE A CREATIVE GENIUS</div>
-      <p class="promise-text">
-        Deine Beiträge sind wertvoll, egal wie groß oder klein sie sein werden.
-        Dein Geschmack, <strong>deine Kreativität</strong>, deine Perspektiven sind unglaublich wertvoll.
-        Ich würde dich nicht fragen, wenn ich dir nicht absolut vertrauen würde, dass du Unglaubliches beitragen kannst.
-      </p>
-    </div>
-  </div>
-
-  <blockquote class="quote-block">
-    <p>„If you hear a voice within you say you cannot paint, then by all means paint and that voice will be silenced."</p>
-    <cite>>> Vincent Van Gogh</cite>
-  </blockquote>
-</section>
-
-<section id="danke">
-  <div class="tag">Danke</div>
-  <h2 class="danke-title">Wenn du möchtest,<br><em>reicht eine Nachricht.</em></h2>
-  <p class="danke-sub">
-    Ich brauche dich und deine Unterstützung für dieses Projekt. Ich will erneut klar machen, dass ich zwar Hilfe für die nächsten Jahre brauche, 
-    aber du nicht mehr als ein paar Stunden im Monat investieren musst, um das fertige Spiel massiv zu bereichern.
-  </p>
-
-  <div class="danke-box">
-    <div class="danke-box-title">Und Jetzt?</div>
-    <div class="danke-steps">
-      <div class="danke-step">
-        <span class="danke-step-num">01</span>
-        <p class="danke-step-text">Probiere dich an der <strong>Testaufgabe</strong> unten.</p>
-      </div>
-      <div class="danke-step">
-        <span class="danke-step-num">02</span>
-        <p class="danke-step-text">Du schreibst mir ehrlich ob du dir vorstellen kannst zu helfen. Mit einem <strong>Nein</strong> oder <strong>Ja</strong>.</p>
-      </div>
-      <div class="danke-step">
-        <span class="danke-step-num">03</span>
-        <p class="danke-step-text">Ich schicke dir <strong>deine erste Aufgabe.</strong></p>
-      </div>
-      <div class="danke-step">
-        <span class="danke-step-num">04</span>
-        <p class="danke-step-text">Du entscheidest fortlaufend wie lange du mitmachen willst.<strong> Ohne schlechtes Gewissen.</strong></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Divider -->
-  <div class="section-divider"></div>
-
-  <!-- CTA -->
-  <div class="cta-area">
-    <a href="https://lupht-und-liebe.atlassian.net/wiki/spaces/~71202021446eb358a844eb9ad7a8fe1e6ba13d/pages/6455317/Small+exercise" class="cta-final">Probeaufgabe ansehen →</a>
-      <p class="mail-note">Melde dich mit deiner E-Mail-Adresse an.<br>(Du musst dich erst mit der Einladung von mir registrieren, falls du das noch nicht gemacht hast!)</p>
-
-    <p class="cta-meta">
-      <br>Dauert circa <strong>20–40 Minuten</strong><br>
-      Wer mitmacht bekommt ein <strong>erstes Geschenk</strong><br>
-      Deadline: <strong>Mo, 04.04.2026</strong>
-    </p>
-  </div>
-</section>
-
-</main>
 
 <script>
-const secs=document.querySelectorAll('section');
-const links=document.querySelectorAll('.nav-link');
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.classList.add('visible');
-      const id=e.target.id;
-      links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+id));
+// https://www.geeksforgeeks.org/javascript/conways-game-of-life-in-javascript/
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const container = canvas.parentElement;
+
+const cellSize = 2;
+let numRows, numCols;
+
+const maxAge = 25; // generations a cell can live before decaying
+
+function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = container.getBoundingClientRect();
+
+    numCols = Math.floor((rect.width * dpr) / cellSize);
+    numRows = Math.floor((rect.height * dpr) / cellSize);
+
+    // internal resolution = grid size
+    canvas.width = numCols;
+    canvas.height = numRows;
+
+    // display size = exact whole-pixel multiple of the grid
+    canvas.style.width = (numCols * cellSize) / dpr + 'px';
+    canvas.style.height = (numRows * cellSize) / dpr + 'px';
+}
+
+resizeCanvas();
+
+function createGrid() {
+    const grid = [];
+    for (let i = 0; i < numRows; i++) {
+        grid[i] = [];
+        for (let j = 0; j < numCols; j++) {
+            grid[i][j] = Math.random() > 0.7 ? 1 : 0;
+        }
     }
-  });
-},{threshold:.15});
-secs.forEach(s=>obs.observe(s));
-links.forEach(l=>{
-  l.addEventListener('click',e=>{
-    e.preventDefault();
-    document.querySelector(l.getAttribute('href')).scrollIntoView({behavior:'smooth'});
-  });
-});
+    return grid;
+}
+
+function createAges() {
+    const a = [];
+    for (let i = 0; i < numRows; i++) {
+        a[i] = [];
+        for (let j = 0; j < numCols; j++) {
+            a[i][j] = Math.floor(Math.random() * maxAge);
+        }
+    }
+    return a;
+}
+
+let grid = createGrid();
+let ages = createAges();
+let animationId = null;
+
+function drawGrid() {
+    const img = ctx.createImageData(numCols, numRows);
+    const d = img.data;
+    for (let i = 0; i < numRows; i++) {
+        for (let j = 0; j < numCols; j++) {
+            if (grid[i][j] === 1) {
+                const p = (i * numCols + j) * 4;
+                const youth = 1 - ages[i][j] / maxAge;
+
+                d[p] = 162 * youth;
+                d[p + 1] = 156  * youth;
+                d[p + 2] = 252 * youth;
+                d[p + 3] = 255;
+            }
+        }
+    }
+    ctx.putImageData(img, 0, 0);
+}
+
+function updateGrid() {
+    const newGrid = [];
+    const newAges = [];
+    const newDensity = [];
+    for (let i = 0; i < numRows; i++) {
+        newGrid[i] = [];
+        newAges[i] = [];
+        for (let j = 0; j < numCols; j++) {
+            const neighbors = countNeighbors(i, j);
+            const alive = grid[i][j] === 1;
+            let next;
+
+            // your rules
+            if (alive && (neighbors < 2 || neighbors > 3)) {
+                next = 0;
+            } else if (!alive && (neighbors === 3 || neighbors === 7)) {
+                next = 1;
+            } else {
+                next = grid[i][j];
+            }
+
+            // age handling
+            let age = 0;
+            if (next === 1) {
+                if (alive) {
+                    age = ages[i][j] + 1;
+                    if (age > maxAge) {
+                        next = 0;
+                        age = 0;
+                    }
+                }
+            }
+
+            newGrid[i][j] = next;
+            newAges[i][j] = age;
+        }
+    }
+    grid = newGrid;
+    ages = newAges;
+}
+
+function countNeighbors(row, col) {
+    let count = 0;
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            const r = row + i;
+            const c = col + j;
+            if (r >= 0 && r < numRows && c >= 0 &&
+                c < numCols && !(i === 0 && j === 0)) {
+                count += grid[r][c];
+            }
+        }
+    }
+    return count;
+}
+
+let lastTime = 0;
+const stepDelay = 1000/(32 / 2);
+
+function mainLoop(timestamp) {
+    if (timestamp - lastTime >= stepDelay) {
+        updateGrid();
+        drawGrid();
+        lastTime = timestamp;
+    }
+    animationId = requestAnimationFrame(mainLoop);
+}
+
+requestAnimationFrame(mainLoop);
 </script>
-</body>
+  </body>
 </html>
